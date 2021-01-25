@@ -3,19 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+/*
+ * This class generates a LevelData ScriptableObject that is then read at runtime by the game.
+ * Unfortunately the generator is unfinished so at this moment it is essentially useless, but
+ * it is capable of creating and saving a ScriptableObject and can be called in the Editor in
+ * its own menu item: "Level Generation".
+ */
+
 public class LevelDataGenerator
 {
-    [MenuItem("Level Generation/Generate Easy Level Data")]
+    [MenuItem("Level Generation/Generate Level Data")]
     static void Init()
     {
-        //LevelData data = ScriptableObject.CreateInstance<LevelData>();
-        //Level testLevel = GenerateLevel(3, 3);
-        //data.width = testLevel.width;
-        //data.height = testLevel.height;
-        //data.pairs = testLevel.nodePairs;
-
-        //AssetDatabase.CreateAsset(data, "Assets/Levels/testLevelData.asset");
+        // Generates a 4x4 level
+        LevelData data = ScriptableObject.CreateInstance<LevelData>();
         Level testLevel = GenerateLevel(4, 4, 1);
+        data.width = testLevel.width;
+        data.height = testLevel.height;
+        data.nodePair = testLevel.nodePair;
+
+        AssetDatabase.CreateAsset(data, "Assets/Levels/Test4x4LevelData.asset");
     }
 
     struct Node
@@ -25,12 +32,11 @@ public class LevelDataGenerator
         public (int,int) next;
     }
 
-    [System.Serializable]
     struct Level
     {
         public int width;
         public int height;
-        public List<((int, int), (int, int))> nodePairs;
+        public ((int, int), (int, int)) nodePair;
     }
 
     static Level GenerateLevel(int rows, int columns, int iterations)
@@ -42,7 +48,7 @@ public class LevelDataGenerator
         // a level must have at least 2 rows or 2 columns
         if(rows <= 1 || columns <= 1)
         {
-            //TODO: throw exception? what do I do here
+            //TODO: throw exception
             return level;
         }
 
@@ -153,12 +159,10 @@ public class LevelDataGenerator
             // select one of the two endpoints at random
             if (Random.Range(0, 2) == 0)
             {
-                Debug.Log("Chose head!");
                 endpoint = head;
             }
             else
             {
-                Debug.Log("Chose tail!");
                 endpoint = tail;
             }
 
@@ -210,8 +214,6 @@ public class LevelDataGenerator
             int idx = Random.Range(0, neighbors.Count);
             (int, int) loopPoint = neighbors[idx];
 
-            //Debug.Log("Chosen candidate: " + loopPoint.Item1 + "," + loopPoint.Item2);
-
             // if its the end of the path
             if (node.next == endpoint)
             {
@@ -259,14 +261,12 @@ public class LevelDataGenerator
                 bool pathFixed = false;
                 while (!pathFixed)
                 {
-                    Debug.Log("Node to fix:" + nodeToFix);
                     (int, int) oldNext = grid[nodeToFix.Item1, nodeToFix.Item2].next;
                     grid[nodeToFix.Item1, nodeToFix.Item2].next = grid[nodeToFix.Item1, nodeToFix.Item2].prev;
                     grid[nodeToFix.Item1, nodeToFix.Item2].prev = oldNext;
 
                     if (grid[nodeToFix.Item1, nodeToFix.Item2].next == loopPoint && nodeToFix != endpoint)
                     {
-                        Debug.Log("Node fixed!");
                         grid[nodeToFix.Item1, nodeToFix.Item2].next = nodeToFix;
                         pathFixed = true;
                     }
