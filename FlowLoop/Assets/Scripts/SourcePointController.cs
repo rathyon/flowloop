@@ -99,7 +99,6 @@ public class SourcePointController : MonoBehaviour
             isLevelCompleted = true;
             isDrawingLine = false;
             levelManager.GetComponent<LevelManagerController>().CompleteLevel();
-            Debug.Log("Level complete!");
             return;
         }
 

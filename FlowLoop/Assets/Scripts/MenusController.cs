@@ -15,6 +15,8 @@ public class MenusController : MonoBehaviour
 
     void Start()
     {
+        //PlayerPrefs.DeleteAll();
+
         levelsMenu.SetActive(false);
         howToPlayMenu.SetActive(false);
 
@@ -33,7 +35,11 @@ public class MenusController : MonoBehaviour
             }
         }
         else
+        {
+            PlayerPrefs.SetInt("LevelsCompleted", 0);
             continueButton.interactable = false;
+        }
+            
     }
 
 
