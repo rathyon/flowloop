@@ -42,6 +42,12 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: OccupyLayer
+    uniqueID: 2767298791
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: PointLayer
+    uniqueID: 1582134381
     locked: 0
