@@ -11,6 +11,7 @@ public class MenusController : MonoBehaviour
     public GameObject howToPlayMenu;
 
     public Button continueButton;
+    public Button[] levelButtons;
 
     void Start()
     {
@@ -21,7 +22,7 @@ public class MenusController : MonoBehaviour
         if (PlayerPrefs.HasKey("LevelsCompleted"))
         {
             int levelsCompleted = PlayerPrefs.GetInt("LevelsCompleted");
-            if (levelsCompleted >= 1)
+            if (levelsCompleted > 0)
             {
                 Debug.Log("Continue button enabled: player has completed " + levelsCompleted + " levels!");
                 continueButton.interactable = true;
@@ -43,7 +44,7 @@ public class MenusController : MonoBehaviour
             // if player has completed level N, then levels up to and including N+1 are unlocked
             // so we load N+1 level
             int levelsCompleted = PlayerPrefs.GetInt("LevelsCompleted");
-            if (levelsCompleted >= 1 && levelsCompleted < 4)
+            if (levelsCompleted > 0 && levelsCompleted < 4)
             {
                 SceneManager.LoadSceneAsync(levelsCompleted + 1);
             }
@@ -58,6 +59,24 @@ public class MenusController : MonoBehaviour
     {
         levelsMenu.SetActive(true);
         mainMenu.SetActive(false);
+
+        // set buttons of levels that are unlocked as interactable
+        if (PlayerPrefs.HasKey("LevelsCompleted"))
+        {
+            int levelsCompleted = PlayerPrefs.GetInt("LevelsCompleted");
+            if(levelsCompleted > 0)
+            {
+                // clamp value to avoid OutOfIndex error
+                if (levelsCompleted >= levelButtons.Length)
+                    levelsCompleted = levelButtons.Length-1;
+
+                // reverse loop to enable levels before the highest unlocked level
+                for (int i = levelsCompleted; i > 0; i--)
+                {
+                    levelButtons[i].interactable = true;
+                }
+            }
+        }
     }
 
     public void OnHowToPlayClick()
@@ -71,5 +90,10 @@ public class MenusController : MonoBehaviour
         mainMenu.SetActive(true);
         levelsMenu.SetActive(false);
         howToPlayMenu.SetActive(false);
+    }
+
+    public void OnLevelClick(int idx)
+    {
+        SceneManager.LoadSceneAsync(idx);
     }
 }
