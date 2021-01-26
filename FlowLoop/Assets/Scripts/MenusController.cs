@@ -26,7 +26,7 @@ public class MenusController : MonoBehaviour
             int levelsCompleted = PlayerPrefs.GetInt("LevelsCompleted");
             if (levelsCompleted > 0)
             {
-                Debug.Log("Continue button enabled: player has completed " + levelsCompleted + " levels!");
+                //Debug.Log("Continue button enabled: player has completed " + levelsCompleted + " levels!");
                 continueButton.interactable = true;
             }
             else

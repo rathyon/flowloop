@@ -11,6 +11,7 @@ public class SourcePointController : MonoBehaviour
     private GameObject[] tiles;
     private GameObject endPoint;
 
+    private float minDistBetweenPoints = 0.2f;
     private GameObject line;
     private List<Vector2> linePoints;
 
@@ -46,6 +47,9 @@ public class SourcePointController : MonoBehaviour
         {
             isDrawingLine = true;
             CreateLine();
+
+            // Doesn't really work, it's a fixed duration vibrate (~ 1 sec)
+            //Handheld.Vibrate();
         }   
     }
 
@@ -84,7 +88,7 @@ public class SourcePointController : MonoBehaviour
                 TileController tileController = tile.GetComponent<TileController>();
 
                 // if tried to connect to endpoint and not all tiles are occupied, reset
-                if (!tileController.isOccupied)
+                if (!tileController.IsOccupied())
                 {
                     OnMouseUp();
                     return;
@@ -92,13 +96,13 @@ public class SourcePointController : MonoBehaviour
             }
 
             // else, level is complete
-            linePoints.Add(endPoint.transform.position);
-            lineRenderer.positionCount++;
-            lineRenderer.SetPosition(lineRenderer.positionCount - 1, endPoint.transform.position);
-            edgeCollider.points = linePoints.ToArray();
+            AddNewPoint(endPoint.transform.position);
+
+            // set flags and call "event"
             isLevelCompleted = true;
             isDrawingLine = false;
             levelManager.GetComponent<LevelManagerController>().CompleteLevel();
+
             return;
         }
 
@@ -108,15 +112,12 @@ public class SourcePointController : MonoBehaviour
             if (tile.GetComponent<BoxCollider2D>().bounds.Contains(newPos))
             {
                 TileController tileController = tile.GetComponent<TileController>();
-                if (!tileController.isOccupied)
+                if (!tileController.IsOccupied())
                 {
                     prevTile = tile;
-                    tileController.isOccupied = true;
+                    tileController.SetOccupied(true);
 
-                    linePoints.Add(tile.transform.position);
-                    lineRenderer.positionCount++;
-                    lineRenderer.SetPosition(lineRenderer.positionCount - 1, tile.transform.position);
-                    edgeCollider.points = linePoints.ToArray();
+                    AddNewPoint(tile.transform.position);
                     return;
                 }
                 else if(!Object.ReferenceEquals(prevTile, tile))
@@ -127,6 +128,13 @@ public class SourcePointController : MonoBehaviour
             }
         }
 
+        // i a continuous line is desired, enable this bit of code
+        /** /
+        if(Vector2.Distance(linePoints[linePoints.Count - 2], newPos) >= minDistBetweenPoints)
+        {
+            AddNewPoint(newPos);
+        }
+        /**/
         // else just update the last point's position
         linePoints[linePoints.Count - 1] = newPos;
         lineRenderer.SetPosition(linePoints.Count - 1, newPos);
@@ -138,7 +146,15 @@ public class SourcePointController : MonoBehaviour
         Destroy(line);
         foreach (GameObject tile in tiles)
         {
-            tile.GetComponent<TileController>().isOccupied = false;
+            tile.GetComponent<TileController>().SetOccupied(false);
         }
+    }
+
+    void AddNewPoint(Vector2 newPos)
+    {
+        linePoints.Add(newPos);
+        lineRenderer.positionCount++;
+        lineRenderer.SetPosition(lineRenderer.positionCount - 1, newPos);
+        edgeCollider.points = linePoints.ToArray();
     }
 }

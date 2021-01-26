@@ -4,9 +4,31 @@ using UnityEngine;
 
 public class TileController : MonoBehaviour
 {
-    public bool isOccupied;
+    public GameObject occupiedSquare;
+
+    private bool isOccupied;
     void Start()
     {
+        occupiedSquare.SetActive(false);
         isOccupied = false;
+    }
+
+    public bool IsOccupied()
+    {
+        return isOccupied;
+    }
+
+    public void SetOccupied(bool val)
+    {
+        isOccupied = val;
+
+        if (isOccupied)
+        {
+            occupiedSquare.SetActive(true);
+        }
+        else
+        {
+            occupiedSquare.SetActive(false);
+        }
     }
 }

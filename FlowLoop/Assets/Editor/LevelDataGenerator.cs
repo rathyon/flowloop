@@ -22,7 +22,7 @@ public class LevelDataGenerator
         data.height = testLevel.height;
         data.nodePair = testLevel.nodePair;
 
-        AssetDatabase.CreateAsset(data, "Assets/Levels/Test4x4LevelData.asset");
+        AssetDatabase.CreateAsset(data, "Assets/Level Data/Test4x4LevelData.asset");
     }
 
     struct Node
