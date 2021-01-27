@@ -9,11 +9,16 @@ public class LevelManagerController : MonoBehaviour
     public Button prevLevelButton;
     public Button nextLevelButton;
 
+    public GameObject completionParticles;
+
     // Manually set in the editor, it is the level's number
     public int currentLevel;
 
     void Start()
     {
+        completionParticles.transform.position = nextLevelButton.transform.position;
+        completionParticles.SetActive(false);
+
         if(currentLevel > 1)
         {
             prevLevelButton.interactable = true;
@@ -37,6 +42,7 @@ public class LevelManagerController : MonoBehaviour
     public void CompleteLevel()
     {
         Debug.Log("Level complete!");
+        completionParticles.SetActive(true);
 
         if (PlayerPrefs.HasKey("LevelsCompleted"))
         {

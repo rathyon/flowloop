@@ -11,7 +11,8 @@ public class SourcePointController : MonoBehaviour
     private GameObject[] tiles;
     private GameObject endPoint;
 
-    private float minDistBetweenPoints = 0.2f;
+    // used for continuous line drawing
+    //private float minDistBetweenPoints = 0.2f;
     private GameObject line;
     private List<Vector2> linePoints;
 
@@ -20,6 +21,11 @@ public class SourcePointController : MonoBehaviour
     private GameObject prevTile;
 
     private GameObject levelManager;
+
+    public GameObject idleParticle;
+    public GameObject drawingParticle;
+    public GameObject failParticle;
+    public GameObject endingParticle;
 
     void Start()
     {
@@ -30,6 +36,12 @@ public class SourcePointController : MonoBehaviour
         tiles = GameObject.FindGameObjectsWithTag("Tile");
         endPoint = GameObject.FindGameObjectWithTag("EndPoint");
         levelManager = GameObject.FindGameObjectWithTag("LevelManager");
+
+        idleParticle.SetActive(true);
+        drawingParticle.SetActive(false);
+        failParticle.SetActive(false);
+        endingParticle.SetActive(false);
+        endingParticle.transform.position = endPoint.transform.position;
     }
 
     void Update()
@@ -46,6 +58,7 @@ public class SourcePointController : MonoBehaviour
         if (!isLevelCompleted)
         {
             isDrawingLine = true;
+            drawingParticle.SetActive(true);
             CreateLine();
 
             // Doesn't really work, it's a fixed duration vibrate (~ 1 sec)
@@ -55,7 +68,7 @@ public class SourcePointController : MonoBehaviour
 
     void OnMouseUp()
     {
-        if (!isLevelCompleted)
+        if (!isLevelCompleted && isDrawingLine)
         {
             isDrawingLine = false;
             DestroyLine();
@@ -80,6 +93,8 @@ public class SourcePointController : MonoBehaviour
 
     void UpdateLine(Vector2 newPos)
     {
+        drawingParticle.transform.position = newPos;
+
         // if colliding with endpoint
         if (endPoint.GetComponent<BoxCollider2D>().bounds.Contains(newPos))
         {
@@ -102,6 +117,11 @@ public class SourcePointController : MonoBehaviour
             isLevelCompleted = true;
             isDrawingLine = false;
             levelManager.GetComponent<LevelManagerController>().CompleteLevel();
+
+            // add particle flourish
+            drawingParticle.SetActive(false);
+            endingParticle.SetActive(true);
+            //idleParticle.SetActive(false);
 
             return;
         }
@@ -143,11 +163,19 @@ public class SourcePointController : MonoBehaviour
 
     void DestroyLine()
     {
+        failParticle.transform.position = linePoints[linePoints.Count - 1];
+        // force reset the particle system
+        failParticle.SetActive(false);
+        failParticle.SetActive(true);
+
         Destroy(line);
         foreach (GameObject tile in tiles)
         {
             tile.GetComponent<TileController>().SetOccupied(false);
         }
+
+        drawingParticle.transform.position = transform.position;
+        drawingParticle.SetActive(false);
     }
 
     void AddNewPoint(Vector2 newPos)

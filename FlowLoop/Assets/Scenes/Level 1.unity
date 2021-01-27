@@ -1545,6 +1545,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4639563030077873421, guid: cb847a5cea5d3ae448174589b76ee31a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6551749974880354915, guid: cb847a5cea5d3ae448174589b76ee31a, type: 3}
       propertyPath: m_Name
       value: SourcePoint
