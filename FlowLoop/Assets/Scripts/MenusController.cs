@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+/*
+    This class handles all of the UI behaviour in the Main Menu.
+ */
+
 public class MenusController : MonoBehaviour
 {
     public GameObject mainMenu;
@@ -15,8 +19,6 @@ public class MenusController : MonoBehaviour
 
     void Start()
     {
-        //PlayerPrefs.DeleteAll();
-
         levelsMenu.SetActive(false);
         howToPlayMenu.SetActive(false);
 
@@ -26,7 +28,6 @@ public class MenusController : MonoBehaviour
             int levelsCompleted = PlayerPrefs.GetInt("LevelsCompleted");
             if (levelsCompleted > 0)
             {
-                //Debug.Log("Continue button enabled: player has completed " + levelsCompleted + " levels!");
                 continueButton.interactable = true;
             }
             else

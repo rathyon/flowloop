@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+/*
+    This class controls the UI behaviour in each level
+ */
+
 public class LevelManagerController : MonoBehaviour
 {
     public Button prevLevelButton;
@@ -42,7 +46,6 @@ public class LevelManagerController : MonoBehaviour
     public void CompleteLevel()
     {
         Debug.Log("Level complete!");
-        completionParticles.SetActive(true);
 
         if (PlayerPrefs.HasKey("LevelsCompleted"))
         {
@@ -55,7 +58,10 @@ public class LevelManagerController : MonoBehaviour
 
                 // if its not last level(4), unlock next lvl button
                 if (!nextLevelButton.interactable && currentLevel < 4)
+                {
                     nextLevelButton.interactable = true;
+                    completionParticles.SetActive(true);
+                }
             }
         }
     }

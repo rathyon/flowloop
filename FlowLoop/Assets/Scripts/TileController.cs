@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+    This class handles each tile's state.
+ */
 public class TileController : MonoBehaviour
 {
     public GameObject occupiedSquare;

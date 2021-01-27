@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+    This class holds all of the gameplay logic of drawing lines
+    and associated particle effects.
+ */
+
 public class SourcePointController : MonoBehaviour
 {
     public GameObject linePrefab;
@@ -11,8 +16,6 @@ public class SourcePointController : MonoBehaviour
     private GameObject[] tiles;
     private GameObject endPoint;
 
-    // used for continuous line drawing
-    //private float minDistBetweenPoints = 0.2f;
     private GameObject line;
     private List<Vector2> linePoints;
 
@@ -77,6 +80,7 @@ public class SourcePointController : MonoBehaviour
 
     void CreateLine()
     {
+        // create a Connection Line and initialize it
         line = Instantiate(linePrefab, Vector2.zero, Quaternion.identity);
         lineRenderer = line.GetComponent<LineRenderer>();
         edgeCollider = line.GetComponent<EdgeCollider2D>();
@@ -95,7 +99,7 @@ public class SourcePointController : MonoBehaviour
     {
         drawingParticle.transform.position = newPos;
 
-        // if colliding with endpoint
+        // Endpoint collision handling
         if (endPoint.GetComponent<BoxCollider2D>().bounds.Contains(newPos))
         {
             foreach(GameObject tile in tiles)
@@ -113,20 +117,16 @@ public class SourcePointController : MonoBehaviour
             // else, level is complete
             AddNewPoint(endPoint.transform.position);
 
-            // set flags and call "event"
             isLevelCompleted = true;
             isDrawingLine = false;
             levelManager.GetComponent<LevelManagerController>().CompleteLevel();
 
-            // add particle flourish
             drawingParticle.SetActive(false);
             endingParticle.SetActive(true);
-            //idleParticle.SetActive(false);
 
-            return;
         }
 
-        // if colliding with a tile and the tile doesn't have the line crossing it, add a point
+        // Tile collision handling
         foreach(GameObject tile in tiles)
         {
             if (tile.GetComponent<BoxCollider2D>().bounds.Contains(newPos))
@@ -148,14 +148,7 @@ public class SourcePointController : MonoBehaviour
             }
         }
 
-        // i a continuous line is desired, enable this bit of code
-        /** /
-        if(Vector2.Distance(linePoints[linePoints.Count - 2], newPos) >= minDistBetweenPoints)
-        {
-            AddNewPoint(newPos);
-        }
-        /**/
-        // else just update the last point's position
+        // Update last point's position
         linePoints[linePoints.Count - 1] = newPos;
         lineRenderer.SetPosition(linePoints.Count - 1, newPos);
         edgeCollider.points = linePoints.ToArray();
